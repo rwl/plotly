@@ -2,53 +2,35 @@ library plotly;
 
 import 'dart:html';
 import 'dart:js';
+import 'dart:async';
 
 /// Interactive scientific chart.
 class Plot {
   JsObject _Plotly;
-  var _container;
+  Element _container;
+  JsObject _proxy;
+
+  StreamController _clickCtrl = new StreamController.broadcast();
+
+  StreamController _beforeHoverCtrl = new StreamController.broadcast();
+  StreamController _hoverCtrl = new StreamController.broadcast();
+  StreamController _unhoverCtrl = new StreamController.broadcast();
 
   /// Create a new plot in an empty `<div>` element.
   ///
   /// A note on sizing: You can either supply height and width in layout, or
   /// give the `div` a height and width in CSS.
-  factory Plot(Element container, List data, Map<String, dynamic> layout,
+  Plot(this._container, List data, Map<String, dynamic> layout,
       {bool showLink: false,
       bool staticPlot,
       String linkText,
       bool displaylogo: false,
       bool displayModeBar,
       bool scrollZoom}) {
-    return new Plot._(container, data, layout, showLink, staticPlot, linkText,
-        displaylogo, displayModeBar, scrollZoom);
-  }
-
-  /// Create a new plot in an empty `<div>` element with the given id.
-  ///
-  /// A note on sizing: You can either supply height and width in layout, or
-  /// give the `div` a height and width in CSS.
-  factory Plot.selector(String selector, List data, Map<String, dynamic> layout,
-      {bool showLink: false,
-      bool staticPlot,
-      String linkText,
-      bool displaylogo: false,
-      bool displayModeBar,
-      bool scrollZoom}) {
-    return new Plot._(selector, data, layout, showLink, staticPlot, linkText,
-        displaylogo, displayModeBar, scrollZoom);
-  }
-
-  Plot._(
-      this._container,
-      List data,
-      Map<String, dynamic> layout,
-      bool showLink,
-      bool staticPlot,
-      String linkText,
-      bool displaylogo,
-      bool displayModeBar,
-      bool scrollZoom) {
     _Plotly = context['Plotly'];
+    if (_Plotly == null) {
+      throw new StateError('plotly.min.js no loaded');
+    }
     var _data = new JsObject.jsify(data);
     var _layout = new JsObject.jsify(layout);
     var opts = {};
@@ -60,7 +42,70 @@ class Plot {
     if (scrollZoom != null) opts['scrollZoom'] = scrollZoom;
     var _opts = new JsObject.jsify(opts);
     _Plotly.callMethod('newPlot', [_container, _data, _layout, _opts]);
+    _attachEventListeners();
   }
+
+  _attachEventListeners() {
+    _proxy = new JsObject.fromBrowserObject(_container);
+    _proxy.callMethod('on', ['plotly_click', (event) => _clickCtrl.add(event)]);
+
+    _proxy.callMethod(
+        'on', ['plotly_beforehover', (event) => _beforeHoverCtrl.add(event)]);
+    _proxy.callMethod('on', ['plotly_hover', (event) => _hoverCtrl.add(event)]);
+    _proxy.callMethod(
+        'on', ['plotly_unhover', (event) => _unhoverCtrl.add(event)]);
+  }
+
+  /// Create a new plot in an empty `<div>` element with the given id.
+  ///
+  /// A note on sizing: You can either supply height and width in layout, or
+  /// give the `div` a height and width in CSS.
+  factory Plot.id(String id, List data, Map<String, dynamic> layout,
+      {bool showLink: false,
+      bool staticPlot,
+      String linkText,
+      bool displaylogo: false,
+      bool displayModeBar,
+      bool scrollZoom}) {
+    var elem = document.getElementById(id);
+    return new Plot(elem, data, layout,
+        showLink: showLink,
+        staticPlot: staticPlot,
+        linkText: linkText,
+        displaylogo: displaylogo,
+        displayModeBar: displayModeBar,
+        scrollZoom: scrollZoom);
+  }
+
+  /// Create a new plot in an empty `<div>` element with the given [selectors].
+  ///
+  /// A note on sizing: You can either supply height and width in layout, or
+  /// give the `div` a height and width in CSS.
+  factory Plot.selector(
+      String selectors, List data, Map<String, dynamic> layout,
+      {bool showLink: false,
+      bool staticPlot,
+      String linkText,
+      bool displaylogo: false,
+      bool displayModeBar,
+      bool scrollZoom}) {
+    var elem = document.querySelector(selectors);
+    return new Plot(elem, data, layout,
+        showLink: showLink,
+        staticPlot: staticPlot,
+        linkText: linkText,
+        displaylogo: displaylogo,
+        displayModeBar: displayModeBar,
+        scrollZoom: scrollZoom);
+  }
+
+  get data => _proxy['data'];
+  get layout => _proxy['layout'];
+
+  Stream get onClick => _clickCtrl.stream;
+  Stream get onBeforeHover => _beforeHoverCtrl.stream;
+  Stream get onHover => _hoverCtrl.stream;
+  Stream get onUnhover => _unhoverCtrl.stream;
 
   /// An efficient means of changing parameters in the data array. When
   /// restyling, you may choose to have the specified changes effect as
@@ -127,6 +172,6 @@ class Plot {
   /// simplest way. You can make any arbitrary change to the data and layout
   /// objects, including completely replacing them, then call redraw.
   void redraw() {
-    _Plotly.callMethod('redraw');
+    _Plotly.callMethod('redraw', [_container]);
   }
 }

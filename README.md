@@ -19,5 +19,5 @@ var layout = {
   'width': 960
 };
 
-new plotly.Plot.selector('myDiv', [trace], layout);
+new plotly.Plot.id('myDiv', [trace], layout);
 ```
