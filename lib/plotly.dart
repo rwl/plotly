@@ -3,6 +3,7 @@ library plotly;
 import 'dart:html';
 import 'dart:js';
 import 'dart:async';
+import 'dart:collection';
 
 /// Interactive scientific chart.
 class Plot {
@@ -10,11 +11,18 @@ class Plot {
   Element _container;
   JsObject _proxy;
 
-  StreamController _clickCtrl = new StreamController.broadcast();
+  List _plotlyEvents = [
+    "plotly_click",
+    "plotly_beforehover", "plotly_hover", "plotly_unhover",
+    "plotly_beforeexport", "plotly_afterexport",
+    "plotly_redraw", "plotly_restyle", "plotly_relayout",
+    "plotly_autosize",
+    "plotly_framework",
+    "plotly_clickannotation",
+    "plotly_beforeplot", "plotly_afterplot"
+  ];
 
-  StreamController _beforeHoverCtrl = new StreamController.broadcast();
-  StreamController _hoverCtrl = new StreamController.broadcast();
-  StreamController _unhoverCtrl = new StreamController.broadcast();
+  Map<String, StreamController> _eventStreams = {};
 
   /// Create a new plot in an empty `<div>` element.
   ///
@@ -47,13 +55,11 @@ class Plot {
 
   _attachEventListeners() {
     _proxy = new JsObject.fromBrowserObject(_container);
-    _proxy.callMethod('on', ['plotly_click', (event) => _clickCtrl.add(event)]);
 
-    _proxy.callMethod(
-        'on', ['plotly_beforehover', (event) => _beforeHoverCtrl.add(event)]);
-    _proxy.callMethod('on', ['plotly_hover', (event) => _hoverCtrl.add(event)]);
-    _proxy.callMethod(
-        'on', ['plotly_unhover', (event) => _unhoverCtrl.add(event)]);
+    _plotlyEvents.forEach((eventName) {
+      _eventStreams[eventName] = new StreamController.broadcast();
+      _proxy.callMethod('on', [eventName, _eventStreams[eventName].add]);
+    });
   }
 
   /// Create a new plot in an empty `<div>` element with the given id.
@@ -102,10 +108,15 @@ class Plot {
   get data => _proxy['data'];
   get layout => _proxy['layout'];
 
-  Stream get onClick => _clickCtrl.stream;
-  Stream get onBeforeHover => _beforeHoverCtrl.stream;
-  Stream get onHover => _hoverCtrl.stream;
-  Stream get onUnhover => _unhoverCtrl.stream;
+  Stream get onClick => _eventStreams["plotly_click"].stream;
+  Stream get onBeforeHover => _eventStreams["plotly_beforehover"].stream;
+  Stream get onHover => _eventStreams["plotly_hover"].stream;
+  Stream get onUnhover => _eventStreams["plotly_unhover"].stream;
+  UnmodifiableMapView<String, Stream> get on =>
+      new UnmodifiableMapView(
+          new Map.fromIterable(_eventStreams.keys,
+              value: (el) => _eventStreams[el].stream)
+      );
 
   /// An efficient means of changing parameters in the data array. When
   /// restyling, you may choose to have the specified changes effect as
