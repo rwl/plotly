@@ -3,7 +3,6 @@ library plotly;
 import 'dart:html';
 import 'dart:js';
 import 'dart:async';
-import 'dart:collection';
 
 /// Interactive scientific chart.
 class Plot {
