@@ -4,6 +4,7 @@ import 'dart:html';
 import 'dart:js';
 import 'dart:async';
 import 'dart:collection';
+import 'dart:html_common';
 
 /// Interactive scientific chart.
 class Plot {
@@ -184,5 +185,9 @@ class Plot {
   /// objects, including completely replacing them, then call redraw.
   void redraw() {
     _Plotly.callMethod('redraw', [_container]);
+  }
+
+  static getSchema() {
+    return wrap_jso( context['Plotly']['PlotSchema'].callMethod("get", []) );
   }
 }
