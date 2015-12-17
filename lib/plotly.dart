@@ -14,13 +14,19 @@ class Plot {
 
   List _plotlyEvents = [
     "plotly_click",
-    "plotly_beforehover", "plotly_hover", "plotly_unhover",
-    "plotly_beforeexport", "plotly_afterexport",
-    "plotly_redraw", "plotly_restyle", "plotly_relayout",
+    "plotly_beforehover",
+    "plotly_hover",
+    "plotly_unhover",
+    "plotly_beforeexport",
+    "plotly_afterexport",
+    "plotly_redraw",
+    "plotly_restyle",
+    "plotly_relayout",
     "plotly_autosize",
     "plotly_framework",
     "plotly_clickannotation",
-    "plotly_beforeplot", "plotly_afterplot"
+    "plotly_beforeplot",
+    "plotly_afterplot"
   ];
 
   Map<String, StreamController> _eventStreams = {};
@@ -114,10 +120,8 @@ class Plot {
   Stream get onHover => _eventStreams["plotly_hover"].stream;
   Stream get onUnhover => _eventStreams["plotly_unhover"].stream;
   UnmodifiableMapView<String, Stream> get on =>
-      new UnmodifiableMapView(
-          new Map.fromIterable(_eventStreams.keys,
-              value: (el) => _eventStreams[el].stream)
-      );
+      new UnmodifiableMapView(new Map.fromIterable(_eventStreams.keys,
+          value: (el) => _eventStreams[el].stream));
 
   /// An efficient means of changing parameters in the data array. When
   /// restyling, you may choose to have the specified changes effect as
@@ -187,7 +191,6 @@ class Plot {
     _Plotly.callMethod('redraw', [_container]);
   }
 
-  static getSchema() {
-    return wrap_jso( context['Plotly']['PlotSchema'].callMethod("get", []) );
-  }
+  static getSchema() =>
+      wrap_jso(context['Plotly']['PlotSchema'].callMethod("get", []));
 }
