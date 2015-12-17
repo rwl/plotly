@@ -7,41 +7,24 @@ import 'dart:collection';
 
 /// Interactive scientific chart.
 class Plot {
-  JsObject _Plotly;
-  Element _container;
-  JsObject _proxy;
-
-  List _plotlyEvents = [
-    "plotly_click",
-    "plotly_beforehover",
-    "plotly_hover",
-    "plotly_unhover",
-    "plotly_beforeexport",
-    "plotly_afterexport",
-    "plotly_redraw",
-    "plotly_restyle",
-    "plotly_relayout",
-    "plotly_autosize",
-    "plotly_framework",
-    "plotly_clickannotation",
-    "plotly_beforeplot",
-    "plotly_afterplot"
-  ];
-
-  Map<String, StreamController> _eventStreams = {};
+  final JsObject _Plotly;
+  final Element _container;
+  final JsObject _proxy;
 
   /// Create a new plot in an empty `<div>` element.
   ///
   /// A note on sizing: You can either supply height and width in layout, or
   /// give the `div` a height and width in CSS.
-  Plot(this._container, List data, Map<String, dynamic> layout,
+  Plot(Element container, List data, Map<String, dynamic> layout,
       {bool showLink: false,
       bool staticPlot,
       String linkText,
       bool displaylogo: false,
       bool displayModeBar,
-      bool scrollZoom}) {
-    _Plotly = context['Plotly'];
+      bool scrollZoom})
+      : _Plotly = context['Plotly'],
+        _container = container,
+        _proxy = new JsObject.fromBrowserObject(container) {
     if (_Plotly == null) {
       throw new StateError('plotly.min.js no loaded');
     }
@@ -56,16 +39,6 @@ class Plot {
     if (scrollZoom != null) opts['scrollZoom'] = scrollZoom;
     var _opts = new JsObject.jsify(opts);
     _Plotly.callMethod('newPlot', [_container, _data, _layout, _opts]);
-    _attachEventListeners();
-  }
-
-  _attachEventListeners() {
-    _proxy = new JsObject.fromBrowserObject(_container);
-
-    _plotlyEvents.forEach((eventName) {
-      _eventStreams[eventName] = new StreamController.broadcast();
-      _proxy.callMethod('on', [eventName, _eventStreams[eventName].add]);
-    });
   }
 
   /// Create a new plot in an empty `<div>` element with the given id.
@@ -114,13 +87,16 @@ class Plot {
   get data => _proxy['data'];
   get layout => _proxy['layout'];
 
-  Stream get onClick => _eventStreams["plotly_click"].stream;
-  Stream get onBeforeHover => _eventStreams["plotly_beforehover"].stream;
-  Stream get onHover => _eventStreams["plotly_hover"].stream;
-  Stream get onUnhover => _eventStreams["plotly_unhover"].stream;
-  UnmodifiableMapView<String, Stream> get on =>
-      new UnmodifiableMapView(new Map.fromIterable(_eventStreams.keys,
-          value: (el) => _eventStreams[el].stream));
+  Stream get onClick => on("plotly_click");
+  Stream get onBeforeHover => on("plotly_beforehover");
+  Stream get onHover => on("plotly_hover");
+  Stream get onUnhover => on("plotly_unhover");
+
+  Stream on(String eventType) {
+    var ctrl = new StreamController();
+    _proxy.callMethod('on', [eventType, ctrl.add]);
+    return ctrl.stream;
+  }
 
   /// An efficient means of changing parameters in the data array. When
   /// restyling, you may choose to have the specified changes effect as
