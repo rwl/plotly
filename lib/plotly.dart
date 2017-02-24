@@ -129,7 +129,7 @@ class Plot {
 
   /// Add new traces to an existing plot at any location in its data array.
   void addTraces(List<Map> traces, [List<int> newIndices]) {
-    var args = [_container, traces];
+    var args = [_container, traces.map((t) => new JsObject.jsify(t)).toList(growable: false)];
     if (newIndices != null) {
       args.add(newIndices);
     }
