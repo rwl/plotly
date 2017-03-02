@@ -104,18 +104,16 @@ class Plot {
   /// Note, leaving the trace indices unspecified assumes that you want
   /// to restyle *all* the traces.
   void restyle(Map aobj, [List<int> traces]) {
-    var _aobj = new JsObject.jsify(aobj);
-    var args = [_container, _aobj];
+    var args = [_container, new JsObject.jsify(aobj)];
     if (traces != null) {
-      args.add(traces);
+      args.add(new JsObject.jsify(traces));
     }
     _Plotly.callMethod('restyle', args);
   }
 
   /// An efficient means of updating just the layout of a plot.
   void relayout(Map aobj) {
-    var _aobj = new JsObject.jsify(aobj);
-    _Plotly.callMethod('relayout', [_container, _aobj]);
+    _Plotly.callMethod('relayout', [_container, new JsObject.jsify(aobj)]);
   }
 
   /// Add a new trace to an existing plot at any location in its data array.
@@ -129,9 +127,9 @@ class Plot {
 
   /// Add new traces to an existing plot at any location in its data array.
   void addTraces(List<Map> traces, [List<int> newIndices]) {
-    var args = [_container, traces.map((t) => new JsObject.jsify(t)).toList(growable: false)];
+    var args = [_container, new JsObject.jsify(traces)];
     if (newIndices != null) {
-      args.add(newIndices);
+      args.add(new JsObject.jsify(newIndices));
     }
     _Plotly.callMethod('addTraces', args);
   }
@@ -143,7 +141,7 @@ class Plot {
   /// Remove traces from a plot by specifying the indices of the traces to be
   /// removed.
   void deleteTraces(List<int> indices) {
-    _Plotly.callMethod('deleteTraces', [_container, indices]);
+    _Plotly.callMethod('deleteTraces', [_container, new JsObject.jsify(indices)]);
   }
 
   /// Reposition a trace in the plot. This will change the ordering of the
@@ -154,7 +152,7 @@ class Plot {
   /// Reorder traces in the plot. This will change the ordering of the
   /// layering and the legend.
   void moveTraces(List<int> currentIndices, List<int> newIndices) {
-    _Plotly.callMethod('moveTraces', [_container, currentIndices, newIndices]);
+    _Plotly.callMethod('moveTraces', [_container, new JsObject.jsify(currentIndices), new JsObject.jsify(newIndices)]);
   }
 
   /// Use redraw to trigger a complete recalculation and redraw of the graph.
