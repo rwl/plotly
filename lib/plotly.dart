@@ -155,6 +155,51 @@ class Plot {
     _Plotly.callMethod('moveTraces', [_container, new JsObject.jsify(currentIndices), new JsObject.jsify(newIndices)]);
   }
 
+  /// Animates to frames.
+  ///
+  /// Parameter [frames] can be a single frame, array of
+  /// frames, or group to which to animate. The intent is inferred by
+  /// the type of the input. Valid inputs are:
+  ///   * String, e.g. 'groupname': animate all frames of a given `group` in
+  ///     the order in which they are defined via [addFrames];
+  ///   * List<String>, e.g. ['frame1', frame2']: a list of frames by
+  ///     name to which to animate in sequence;
+  ///   * Map, e.g {data: ...}: a frame definition to which to animate. The frame is not
+  ///     and does not need to be added via [addFrames]. It may contain any of
+  ///     the properties of a frame, including `data`, `layout`, and `traces`. The
+  ///     frame is used as provided and does not use the `baseframe` property.
+  ///   * List<Map>, e.g. [{data: ...}, {data: ...}]: a list of frame objects,
+  ///     each following the same rules as a single `object`.
+  void animate(frames, [Map opts]) {
+    var args = [_container];
+    args.add((frames is Iterable || frames is Map) ? new JsObject.jsify(frames) : frames);
+    if (opts != null) args.add(new JsObject.jsify(opts));
+    _Plotly.callMethod('animate', args);
+  }
+
+  /// Registers new frames.
+  ///
+  /// [frameList] is a list of frame definitions, in which each object includes any of:
+  /// * name: {String} name of frame to add;
+  /// * data: {List<Map>} trace data;
+  /// * layout: {Map} layout definition;
+  /// * traces: {List} trace indices;
+  /// * baseframe {String} name of frame from which this frame gets defaults.
+  ///
+  /// [indices] is an array of integer indices matching the respective frames in [frameList]. If not
+  /// provided, an index will be provided in serial order. If already used, the frame
+  /// will be overwritten.
+  void addFrames(List<Map> frameList, [List indices]) {
+    var args = [_container, new JsObject.jsify(frameList)];
+    if (indices != null) args.add(new JsObject.jsify(indices));
+    _Plotly.callMethod('addFrames', args);
+  }
+
+  /// Deletes frames by indices.
+  void deleteFrames(List<int> frames) {
+    _Plotly.callMethod('addFrames', [_container, new JsObject.jsify(frames)]);
+  }
+
   /// Use redraw to trigger a complete recalculation and redraw of the graph.
   /// This is not the fastest way to change single attributes, but may be the
   /// simplest way. You can make any arbitrary change to the data and layout
