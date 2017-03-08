@@ -10,7 +10,7 @@ class Plot {
   final Element _container;
   final JsObject _proxy;
 
-  /// Create a new plot in an empty `<div>` element.
+  /// Creates a new plot in an empty `<div>` element.
   ///
   /// A note on sizing: You can either supply height and width in layout, or
   /// give the `div` a height and width in CSS.
@@ -40,7 +40,7 @@ class Plot {
     _Plotly.callMethod('newPlot', [_container, _data, _layout, _opts]);
   }
 
-  /// Create a new plot in an empty `<div>` element with the given id.
+  /// Creates a new plot in an empty `<div>` element with the given id.
   ///
   /// A note on sizing: You can either supply height and width in layout, or
   /// give the `div` a height and width in CSS.
@@ -61,7 +61,7 @@ class Plot {
         scrollZoom: scrollZoom);
   }
 
-  /// Create a new plot in an empty `<div>` element with the given [selectors].
+  /// Creates a new plot in an empty `<div>` element with the given [selectors].
   ///
   /// A note on sizing: You can either supply height and width in layout, or
   /// give the `div` a height and width in CSS.
@@ -116,7 +116,7 @@ class Plot {
     _Plotly.callMethod('relayout', [_container, new JsObject.jsify(aobj)]);
   }
 
-  /// Add a new trace to an existing plot at any location in its data array.
+  /// Adds a new trace to an existing plot at any location in its data array.
   void addTrace(Map trace, [int newIndex]) {
     if (newIndex != null) {
       addTraces([trace], [newIndex]);
@@ -125,7 +125,7 @@ class Plot {
     }
   }
 
-  /// Add new traces to an existing plot at any location in its data array.
+  /// Adds new traces to an existing plot at any location in its data array.
   void addTraces(List<Map> traces, [List<int> newIndices]) {
     var args = [_container, new JsObject.jsify(traces)];
     if (newIndices != null) {
@@ -134,11 +134,11 @@ class Plot {
     _Plotly.callMethod('addTraces', args);
   }
 
-  /// Remove a trace from a plot by specifying the index of the trace to be
+  /// Removes a trace from a plot by specifying the index of the trace to be
   /// removed.
   void deleteTrace(int index) => deleteTraces([index]);
 
-  /// Remove traces from a plot by specifying the indices of the traces to be
+  /// Removes traces from a plot by specifying the indices of the traces to be
   /// removed.
   void deleteTraces(List<int> indices) {
     _Plotly.callMethod('deleteTraces', [_container, new JsObject.jsify(indices)]);
@@ -160,15 +160,15 @@ class Plot {
   /// Parameter [frames] can be a single frame, array of
   /// frames, or group to which to animate. The intent is inferred by
   /// the type of the input. Valid inputs are:
-  ///   * String, e.g. 'groupname': animate all frames of a given `group` in
+  ///   * [String], e.g. 'groupname': animate all frames of a given `group` in
   ///     the order in which they are defined via [addFrames];
-  ///   * List<String>, e.g. ['frame1', frame2']: a list of frames by
+  ///   * [List<String>], e.g. ['frame1', frame2']: a list of frames by
   ///     name to which to animate in sequence;
-  ///   * Map, e.g {data: ...}: a frame definition to which to animate. The frame is not
+  ///   * [Map], e.g {data: ...}: a frame definition to which to animate. The frame is not
   ///     and does not need to be added via [addFrames]. It may contain any of
   ///     the properties of a frame, including `data`, `layout`, and `traces`. The
   ///     frame is used as provided and does not use the `baseframe` property.
-  ///   * List<Map>, e.g. [{data: ...}, {data: ...}]: a list of frame objects,
+  ///   * [List<Map>], e.g. [{data: ...}, {data: ...}]: a list of frame objects,
   ///     each following the same rules as a single `object`.
   void animate(frames, [Map opts]) {
     var args = [_container];
@@ -180,13 +180,13 @@ class Plot {
   /// Registers new frames.
   ///
   /// [frameList] is a list of frame definitions, in which each object includes any of:
-  /// * name: {String} name of frame to add;
-  /// * data: {List<Map>} trace data;
-  /// * layout: {Map} layout definition;
-  /// * traces: {List} trace indices;
-  /// * baseframe {String} name of frame from which this frame gets defaults.
+  /// * name: {[String]} name of frame to add;
+  /// * data: {[List<Map>]} trace data;
+  /// * layout: {[Map]} layout definition;
+  /// * traces: {[List<int>]} trace indices;
+  /// * baseframe {[String]} name of frame from which this frame gets defaults.
   ///
-  /// [indices] is an array of integer indices matching the respective frames in [frameList]. If not
+  /// [indices] is an list of integer indices matching the respective frames in [frameList]. If not
   /// provided, an index will be provided in serial order. If already used, the frame
   /// will be overwritten.
   void addFrames(List<Map> frameList, [List indices]) {
@@ -195,9 +195,9 @@ class Plot {
     _Plotly.callMethod('addFrames', args);
   }
 
-  /// Deletes frames by indices.
-  void deleteFrames(List<int> frames) {
-    _Plotly.callMethod('addFrames', [_container, new JsObject.jsify(frames)]);
+  /// Deletes frames from plot by [indices].
+  void deleteFrames(List<int> indices) {
+    _Plotly.callMethod('addFrames', [_container, new JsObject.jsify(indices)]);
   }
 
   /// Use redraw to trigger a complete recalculation and redraw of the graph.
