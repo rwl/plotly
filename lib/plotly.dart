@@ -197,7 +197,7 @@ class Plot {
 
   /// Deletes frames from plot by [indices].
   void deleteFrames(List<int> indices) {
-    _Plotly.callMethod('addFrames', [_container, new JsObject.jsify(indices)]);
+    _Plotly.callMethod('deleteFrames', [_container, new JsObject.jsify(indices)]);
   }
 
   /// Use redraw to trigger a complete recalculation and redraw of the graph.

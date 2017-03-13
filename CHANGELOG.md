@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.1+1
+
+ - Fixed deleteFrames method
+
 ## 0.7.1
 
  - Added support for animations
