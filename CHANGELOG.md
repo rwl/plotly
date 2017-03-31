@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.1+2
+
+ - Added purge method
+
 ## 0.7.1+1
 
  - Fixed deleteFrames method

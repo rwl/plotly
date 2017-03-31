@@ -208,5 +208,9 @@ class Plot {
     _Plotly.callMethod('redraw', [_container]);
   }
 
+  void purge() {
+    _Plotly.callMethod('purge', [_container]);
+  }
+
   static getSchema() => context['Plotly']['PlotSchema'].callMethod("get");
 }
