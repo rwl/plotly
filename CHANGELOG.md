@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.2
+
+ - Updated plotly version to latests (1.25.2)
+
 ## 0.7.1+2
 
  - Added purge method
