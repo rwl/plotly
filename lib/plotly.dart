@@ -171,7 +171,7 @@ class Plot {
   ///   * [List<Map>], e.g. [{data: ...}, {data: ...}]: a list of frame objects,
   ///     each following the same rules as a single `object`.
   void animate(frames, [Map opts]) {
-    var args = [_container];
+    final args = <dynamic>[_container];
     args.add((frames is Iterable || frames is Map) ? new JsObject.jsify(frames) : frames);
     if (opts != null) args.add(new JsObject.jsify(opts));
     _Plotly.callMethod('animate', args);
