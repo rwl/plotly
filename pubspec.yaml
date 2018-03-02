@@ -1,11 +1,7 @@
 name: plotly
-version: 0.8.0
+version: 0.8.0-alpha.1
 author: Richard Lincoln <r.w.lincoln@gmail.com>
 description: Interactive, browser-based charting library
 homepage: https://github.com/rwl/plotly
 dev_dependencies:
   browser: any
-
-web:
-  compiler:
-    debug: dartdevc
