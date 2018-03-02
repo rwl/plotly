@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.0-alpha.1
+
+ - Updated plotly version (1.34.0) official
+
 ## 0.7.3
 
  - Updated plotly version (1.26.1) official
