@@ -144,6 +144,12 @@ class Plot {
     _Plotly.callMethod('deleteTraces', [_container, new JsObject.jsify(indices)]);
   }
 
+  /// Extend traces
+  void extendTraces(Map aobj, List<int> indices) {
+    var args = [_container, new JsObject.jsify(aobj), new JsObject.jsify(indices)];
+    _Plotly.callMethod('extendTraces', args);
+  }
+
   /// Reposition a trace in the plot. This will change the ordering of the
   /// layering and the legend.
   void moveTrace(int currentIndex, int newIndex) =>
@@ -210,6 +216,12 @@ class Plot {
 
   void purge() {
     _Plotly.callMethod('purge', [_container]);
+  }
+
+  /// A method for updating both the data and layout objects at once.
+  void update(Map dataUpdate, Map layoutUpdate) {
+    _Plotly.callMethod('update', [_container, new JsObject.jsify(dataUpdate),
+    new JsObject.jsify(layoutUpdate)]);
   }
 
   static getSchema() => context['Plotly']['PlotSchema'].callMethod("get");
