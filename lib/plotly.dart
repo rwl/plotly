@@ -4,6 +4,24 @@ import 'dart:html';
 import 'dart:js';
 import 'dart:async';
 
+/// Mode bar buttons
+///
+/// According to plotly.js/src/components/modebar/buttons.js
+enum ModeBarButtons {
+  toImage,
+  sendDataToCloud,
+  zoom2d,
+  pan2d,
+  select2d,
+  lasso2d,
+  zoomIn2d,
+  zoomOut2d,
+  autoScale2d,
+  resetScale2d,
+  hoverClosestCartesian,
+  hoverCompareCartesian
+}
+
 /// Interactive scientific chart.
 class Plot {
   final JsObject _Plotly;
@@ -20,7 +38,8 @@ class Plot {
       String linkText,
       bool displaylogo: false,
       bool displayModeBar,
-      bool scrollZoom})
+      bool scrollZoom,
+      List<ModeBarButtons> modeBarButtonsToRemove})
       : _Plotly = context['Plotly'],
         _container = container,
         _proxy = new JsObject.fromBrowserObject(container) {
@@ -36,6 +55,7 @@ class Plot {
     if (displaylogo != null) opts['displaylogo'] = displaylogo;
     if (displayModeBar != null) opts['displayModeBar'] = displayModeBar;
     if (scrollZoom != null) opts['scrollZoom'] = scrollZoom;
+    if (modeBarButtonsToRemove != null) opts['modeBarButtonsToRemove'] = modeBarButtonsToRemove.map((button) => button.toString().split('.')[1]);
     var _opts = new JsObject.jsify(opts);
     _Plotly.callMethod('newPlot', [_container, _data, _layout, _opts]);
   }
@@ -50,7 +70,8 @@ class Plot {
       String linkText,
       bool displaylogo: false,
       bool displayModeBar,
-      bool scrollZoom}) {
+      bool scrollZoom,
+      List<ModeBarButtons> modeBarButtonsToRemove}) {
     var elem = document.getElementById(id);
     return new Plot(elem, data, layout,
         showLink: showLink,
@@ -58,7 +79,8 @@ class Plot {
         linkText: linkText,
         displaylogo: displaylogo,
         displayModeBar: displayModeBar,
-        scrollZoom: scrollZoom);
+        scrollZoom: scrollZoom,
+        modeBarButtonsToRemove: modeBarButtonsToRemove);
   }
 
   /// Creates a new plot in an empty `<div>` element with the given [selectors].
@@ -72,7 +94,8 @@ class Plot {
       String linkText,
       bool displaylogo: false,
       bool displayModeBar,
-      bool scrollZoom}) {
+      bool scrollZoom,
+      List<ModeBarButtons> modeBarButtonsToRemove}) {
     var elem = document.querySelector(selectors);
     return new Plot(elem, data, layout,
         showLink: showLink,
@@ -80,7 +103,8 @@ class Plot {
         linkText: linkText,
         displaylogo: displaylogo,
         displayModeBar: displayModeBar,
-        scrollZoom: scrollZoom);
+        scrollZoom: scrollZoom,
+        modeBarButtonsToRemove: modeBarButtonsToRemove);
   }
 
   get data => _proxy['data'];
