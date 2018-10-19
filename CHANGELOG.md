@@ -1,6 +1,10 @@
 # Changelog
 
-## 0.7.3
+## 0.9.0 (released 2018-10-22)
+ - Added Dart 2 support
+ - Updated to plotly version 1.41.3
+
+## 0.7.3+1
  - Added update and extendTraces methods
 
 ## 0.7.1+2
