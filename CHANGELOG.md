@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.3
+ - Added update and extendTraces methods
+
 ## 0.7.1+2
 
  - Added purge method
